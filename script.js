@@ -1,48 +1,111 @@
+startGame();
+
 function computerPlay() {
     let myArray = ['rock', 'paper', 'scissors'];
     let randomItem = myArray[Math.floor(Math.random() * myArray.length)];
     return randomItem;
 }
 
-function playRound(playerSelection, computerSelection) {
-    let pSelection = playerSelection.toLowerCase();
+function playRound() {
     let result = 0;
+    let playerSelection = this.name;
+    let computerSelection = computerPlay();
 
-    if (pSelection === 'rock' && computerSelection === 'paper') {
+    if (playerSelection === 'rock' && computerSelection === 'paper') {
         result = 0;
-    } else if (pSelection === 'rock' && computerSelection === 'scissors') {
+    } else if (playerSelection === 'rock' && computerSelection === 'scissors') {
         result = 1;
-    } else if (pSelection === 'paper' && computerSelection === 'rock') {
+    } else if (playerSelection === 'paper' && computerSelection === 'rock') {
         result = 1;
-    } else if (pSelection === 'paper' && computerSelection === 'scissors') {
+    } else if (playerSelection === 'paper' && computerSelection === 'scissors') {
         result = 0;
-    } else if (pSelection === 'scissors' && computerSelection === 'rock') {
+    } else if (playerSelection === 'scissors' && computerSelection === 'rock') {
         result = 0;
-    } else if (pSelection === 'scissors' && computerSelection === 'paper') {
+    } else if (playerSelection === 'scissors' && computerSelection === 'paper') {
         result = 1;
     } else {
         result = 2;
     }
 
-    return result;
+    updateScore(result);
 }
 
-function game() {
-    let playerScore = 0;
-    let computerScore = 0;
+function updateScore(result) {
+    let playerScoreSpan = document.querySelector('.player-score');
+    let computerScoreSpan = document.querySelector('.computer-score');
+    let playerScore = parseInt(playerScoreSpan.textContent);
+    let computerScore = parseInt(computerScoreSpan.textContent);
+    let scoreMessage = document.querySelector('.container-message p');
 
-    for (let i = 0; i < 5; i++) {
-        let playerSelection = prompt('Choose between "Rock", "Paper" and "Scissors"');
-        let computerSelection = computerPlay();
-
-        if (playRound(playerSelection, computerSelection) === 0) {
-            computerScore++;
-            console.log('You lose');
-        } else if (playRound(playerSelection, computerSelection) === 1) {
-            playerScore++;
-            console.log('You win');
-        } else {
-            console.log('Tie');
-        }
+    if (result === 1) {
+        scoreMessage.textContent = 'Round result: You win the round!';
+        playerScore++;
+        playerScoreSpan.textContent = playerScore;
+    } else if (result === 0) {
+        scoreMessage.textContent = 'Round result: You lose the round!'
+        computerScore++;
+        computerScoreSpan.textContent = computerScore;
+    } else {
+        scoreMessage.textContent = 'Round result: Tie!';
     }
+
+    decideWinner(playerScore, computerScore);
 }
+
+function decideWinner(playerScore, computerScore) {
+    let container = document.querySelector('.container-top');
+    let matchMessage = document.createElement('p');
+    if (playerScore === 5) {
+        matchMessage.textContent = 'YOU WON THE GAME';
+        container.appendChild(matchMessage);
+        disableGameButtons();
+        resetGame(container);
+    } else if (computerScore === 5) {
+        matchMessage.textContent = 'YOU LOST THE GAME';
+        container.appendChild(matchMessage);
+        disableGameButtons();
+        resetGame(container);
+    }
+
+}
+
+function resetGame(container) {
+    let resetButton = document.createElement('button');
+    resetButton.className = 'button-reset';
+    resetButton.textContent = 'Reset';
+    resetButton.addEventListener('click', resetScores);
+
+    container.appendChild(resetButton);
+
+}
+
+function resetScores() {
+    let playerScore = document.querySelector('.player-score');
+    let computerScore = document.querySelector('.computer-score');
+    let matchMessage = document.querySelector('.container-top p');
+
+    playerScore.textContent = '0';
+    computerScore.textContent = '0';
+    matchMessage.remove();
+
+    this.remove();
+    startGame();
+}
+
+function disableGameButtons() {
+    const btns = document.querySelectorAll('.button-game');
+
+    btns.forEach(element => {
+        element.disabled = true;
+    });
+}
+
+function startGame() {
+    const btns = document.querySelectorAll('.button-game');
+
+    btns.forEach(element => {
+        element.disabled = false;
+        element.addEventListener('click', playRound);
+    });
+}
+
